@@ -2,13 +2,22 @@ package net.tkdkid1000.discordbot;
 
 import java.awt.Color;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Scanner;
 
 import javax.security.auth.login.LoginException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -19,23 +28,42 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.tkdkid1000.discordbot.utils.StringUtil;
+import net.tkdkid1000.discordbot.utils.UserUtil;
 
 public class Bot {
 
 	JDA jda;
 	
 	public static void main(String[] args) {
-		try {
-			new Bot().run(args);
-		} catch (LoginException e) {
-			e.printStackTrace();
-		}
+		new Bot().run(args);
 	}
 	
-	public void run(String[] args) throws LoginException {
-		JDABuilder builder = JDABuilder.createDefault("ODIwNzQwODk5NDY1OTg2MTM4.YE5khw.jzaxn1JWSCLjprjJ9p3wRDT6yac");
-		builder.setActivity(Activity.watching("https://twitch.tv/armi_s4"));
-		this.jda = builder.build();
+	public void run(String[] args) {
+		String token = "";
+		try {
+			Scanner s = new Scanner(new File("token.txt"));
+			while (s.hasNextLine()) {
+				token += s.nextLine() + "\n";
+			}
+			
+		} catch (FileNotFoundException e) {
+			Logger log = LoggerFactory.getLogger("main");
+			log.error("Provide a token.txt file!");
+			log.error("echo token.txt > tokenhere");
+			System.exit(1);
+		}
+		token = token.strip();
+		JDABuilder builder = JDABuilder.createDefault(token);
+		builder.setActivity(Activity.watching("https://github.com/TKDKid1000"));
+		try {
+			this.jda = builder.build();
+		} catch (LoginException e) {
+			Logger log = LoggerFactory.getLogger("main");
+			log.error("That token is invalid! Please provide a valid one.");
+			System.exit(1);
+		}
 		Command.setPrefix("./");
 		new Command(jda, "hello", 1000, "That command is on delay for {delay} seconds!", Arrays.asList(new Permission[]{Permission.MESSAGE_MANAGE}), "Says hello to you!") {
 
@@ -96,7 +124,36 @@ public class Bot {
 			}
 			
 		};
+		new Command(jda, "kick", 0, "", Arrays.asList(new Permission[] {Permission.KICK_MEMBERS}), "Kicks a user from the server.") {
+
+			@Override
+			public void execute(Member member, String[] args, Message msg) {
+				if (args.length == 0) {
+					msg.reply("Please specify a user!").queue();
+				} else if (args.length > 0) {
+					if (UserUtil.getUserFromMention(args[0]) != null) {
+						User user = UserUtil.getUserFromMention(args[0]);
+						msg.reply("Kicking " + user.getAsMention() + " from the server.").queue();
+						Member target = member.getGuild().getMember(user);
+						if (target == null) {
+							msg.reply("The specified user is a bot!").queue();
+						}
+						if (args.length > 1) {
+							String reason = StringUtil.join(Arrays.asList(args).subList(1, args.length), " ");
+							target.kick(reason).queue();
+						} else {
+							target.kick().queue();
+						}
+					} else {
+						msg.reply("That is not a valid user!").queue();
+					}
+				}
+			}
+			
+		};
 		new HelpCommand(jda, "help", "Shows this message");
-		new AntiSwear(jda, new String[]{"bad", "word", "here"});
+		new TagCommand(jda, "tag", 1000, "That command is on delay for {delay} seconds!", Arrays.asList(new Permission[] {Permission.MESSAGE_MANAGE}), "Tag custom command system!");
+		new AntiSwear(jda, new String[]{});
+		new TagListener(jda, ".\\");
 	}
 }

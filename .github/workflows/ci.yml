@@ -20,6 +20,8 @@ jobs:
         distribution: 'adopt'
     - name: Build with Maven
       run: mvn install
+    - name: List files
+      run: ls
     - name: Define MVN_VERSION variable
       run: |
         MVN_VERSION=$(grep version pom.xml | grep -v -e '<?xml|~'| head -n 1 | sed 's/[[:space:]]//g' | sed -E 's/<.{0,1}version>//g' | awk '{print $1}')
@@ -32,5 +34,5 @@ jobs:
         title: "${{ env.MVN_VERSION }}"
         prerelease: true
         files: |
-          *.jar
+          target/*.jar
         

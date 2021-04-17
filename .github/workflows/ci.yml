@@ -21,7 +21,9 @@ jobs:
     - name: Build with Maven
       run: mvn install
     - name: Define MVN_VERSION variable
-      run: MVN_VERSION=$(grep version pom.xml | grep -v -e '<?xml|~'| head -n 1 | sed 's/[[:space:]]//g' | sed -E 's/<.{0,1}version>//g' | awk '{print $1}')
+      run: |
+        MVN_VERSION=$(grep version pom.xml | grep -v -e '<?xml|~'| head -n 1 | sed 's/[[:space:]]//g' | sed -E 's/<.{0,1}version>//g' | awk '{print $1}')
+        echo "$MVN_VERSION"
     - name: Create release
       uses: "marvinpinto/action-automatic-releases@latest"
       with:
@@ -29,7 +31,6 @@ jobs:
         automatic_release_tag: "${{ env.MVN_VERSION }}"
         title: "${{ env.MVN_VERSION }}"
         prerelease: true
-        file: |
+        files: |
           *.jar
-          
         

@@ -42,10 +42,10 @@ public class TagCommand extends Command {
 				embed.setTitle("Tag Custom Commands!");
 				embed.setColor(Color.BLUE);
 				embed.setAuthor("TKDKid1000", "https://github.com/TKDKid1000", "https://avatars.githubusercontent.com/u/69736165?v=4");
-				embed.setDescription("This is the tag custom command system. It allows creation of mini custom commands using text.\n**Commands**\n ./tag <command> <args>");
-				embed.addBlankField(true);
+				embed.setDescription("This is the tag custom command system. It allows creation of mini custom commands using text.\n**Usage**\nRun these commands with `" + Config.config.get("tagprefix") + "<command>`.\n**Commands**\n ./tag <command> <args>");
 				embed.addField("add <title> <description>", "Creates a tag command with the specified description.", true);
 				embed.addField("remove <title>", "Removes a tag command.", true);
+				embed.addField("list", "Lists all current commands.", true);
 				msg.reply(embed.build()).queue();
 			} else {
 				if (args[0].equalsIgnoreCase("add")) {
@@ -80,10 +80,23 @@ public class TagCommand extends Command {
 							embed.setDescription("That tag does not exist!");
 						}
 						msg.reply(embed.build()).queue();
-						gson.toJson(tags, new FileWriter("tags.json"));
+						Writer writer = new FileWriter("./tags.json");
+						gson.toJson(tags, writer);
+						writer.flush();
+						writer.close();
 					} else {
 						msg.reply("Please provide a tag title!").queue();
 					}
+				} else if (args[0].equalsIgnoreCase("list")) {
+					EmbedBuilder embed = new EmbedBuilder();
+					embed.setTitle("Tag Custom Commands!");
+					embed.setColor(Color.BLUE);
+					embed.setAuthor("TKDKid1000", "https://github.com/TKDKid1000", "https://avatars.githubusercontent.com/u/69736165?v=4");
+					embed.setDescription("Here is a list of the current tags, the are run with `" + Config.config.get("tagprefix") + "<command>.`");
+					tags.forEach((command, value) -> {
+						embed.addField("**"+command+"**", value, true);
+					});
+					msg.reply(embed.build()).queue();
 				} else {
 					EmbedBuilder embed = new EmbedBuilder();
 					embed.setTitle("Tag Custom Commands!");

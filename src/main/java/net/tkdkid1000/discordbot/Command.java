@@ -56,6 +56,16 @@ public abstract class Command extends ListenerAdapter {
 		}, 1, 1);
 	}
 	
+	public static Command getCommand(String name) {
+		Command command = null;
+		for (Command cmd : commands) {
+			if (cmd.getName().equals(name)) {
+				command = cmd;
+			}
+		}
+		return command;
+	}
+	
 	public static String getPrefix() {
 		return prefix;
 	}
@@ -70,6 +80,14 @@ public abstract class Command extends ListenerAdapter {
 	
 	public String getDescription() {
 		return description;
+	}
+	
+	public long getDelay() {
+		return delay;
+	}
+	
+	public Collection<Permission> getPermissions() {
+		return perms;
 	}
 	
 	public abstract void execute(Member member, String[] args, Message msg);
@@ -90,7 +108,7 @@ public abstract class Command extends ListenerAdapter {
 				}
 			}
 		} else {
-			event.getChannel().sendMessage(delaymsg.replace("{delay}", ""+(delaymap.get(event.getMember())/1000))).queue();
+			event.getMessage().reply(delaymsg.replace("{delay}", ""+(delaymap.get(event.getMember())/1000))).queue();
 		}
 	}
 }

@@ -1,6 +1,8 @@
 {
-  "test": "test1",
+  "test": "hi",
   "example": "waidjwaoi",
   "yes.": "Yes, i am gonna code bots with jda now. it is WAYYYYYYY easier.",
-  "help": "./help for help to get helped because you need to stop it and get some help"
+  "help": "./help for help to get helped because you need to stop it and get some help",
+  "nerd": "NERD",
+  "reference": "Some reference about my prefix choices. As you may know, the command prefix is `./`, and tag prefix is `~/`. These are clearly linux prefixes if you haven\u0027t seen so already. `./` refers to the current path, `.` means current directory path, and the `/` at the end means that you are referencing a directory and not a file. Then you are \"running an executable\" in the current directory by doing `./command`, or better: `./executable`. In a similar vein, `~/` means home directory. `~` meaning home path, and, again, `/` meaning its a directory. So all your \"tags\" are stored in the home directory, becuase, reasons? idk. But yea, now you understand. Bye!"
 }
